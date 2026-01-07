@@ -4,9 +4,9 @@
     top: 20px;
     right: 20px;
     width: 350px;
-    min-width: 300px;
+    min-width: 320px;
     min-height: 200px;
-    max-width: 800px;
+    max-width: 90vw;
     max-height: 90vh;
     background-color: #1a1a1a;
     color: #fff;
@@ -17,26 +17,91 @@
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     border: 1px solid #333;
     backdrop-filter: blur(10px);
-    transition: opacity 0.2s ease;
-    /* Removed transform transition to avoid conflict with resize */
     opacity: 0;
+    transition: opacity 0.2s ease;
     pointer-events: none;
-    transform: translateY(-20px);
-
-    /* Resizable properties */
-    resize: both;
-    overflow: hidden;
-    /* Changed from auto to hidden for the container itself, flex children handle overflow */
     display: flex;
-    /* Changed from block to flex for internal sizing */
     flex-direction: column;
 }
 
 #extended-search-container.visible {
     opacity: 1;
     pointer-events: auto;
-    transform: translateY(0);
 }
+
+/* Resize Handles */
+.es-resize-handle {
+    position: absolute;
+    /* background: rgba(255,0,0,0.2); remove comment for debug */
+    z-index: 1000000;
+}
+
+/* Corners */
+.es-resize-nw {
+    top: -5px;
+    left: -5px;
+    width: 15px;
+    height: 15px;
+    cursor: nw-resize;
+}
+
+.es-resize-ne {
+    top: -5px;
+    right: -5px;
+    width: 15px;
+    height: 15px;
+    cursor: ne-resize;
+}
+
+.es-resize-sw {
+    bottom: -5px;
+    left: -5px;
+    width: 15px;
+    height: 15px;
+    cursor: sw-resize;
+}
+
+.es-resize-se {
+    bottom: -5px;
+    right: -5px;
+    width: 15px;
+    height: 15px;
+    cursor: se-resize;
+}
+
+/* Edges */
+.es-resize-n {
+    top: -5px;
+    left: 10px;
+    right: 10px;
+    height: 10px;
+    cursor: n-resize;
+}
+
+.es-resize-s {
+    bottom: -5px;
+    left: 10px;
+    right: 10px;
+    height: 10px;
+    cursor: s-resize;
+}
+
+.es-resize-w {
+    left: -5px;
+    top: 10px;
+    bottom: 10px;
+    width: 10px;
+    cursor: w-resize;
+}
+
+.es-resize-e {
+    right: -5px;
+    top: 10px;
+    bottom: 10px;
+    width: 10px;
+    cursor: e-resize;
+}
+
 
 /* Header */
 .es-header {
@@ -47,6 +112,11 @@
     font-weight: 600;
     font-size: 16px;
     color: #f0f0f0;
+    cursor: move;
+    /* Indicates draggable */
+    user-select: none;
+    padding: 4px;
+    /* Slight padding for easier grabbing */
 }
 
 .es-close-btn {
@@ -56,6 +126,7 @@
     cursor: pointer;
     font-size: 20px;
     transition: color 0.2s;
+    padding: 0 4px;
 }
 
 .es-close-btn:hover {
@@ -68,11 +139,8 @@
     flex-direction: column;
     gap: 10px;
     flex: 1;
-    /* Take up available space */
     overflow-y: auto;
-    /* Scroll internally */
     padding-right: 4px;
-    /* Space for scrollbar */
 }
 
 /* Individual Search Row */
@@ -84,7 +152,6 @@
     padding: 8px;
     border-radius: 8px;
     border-left: 4px solid transparent;
-    /* Color indicator */
 }
 
 .es-search-input {
@@ -94,17 +161,45 @@
     color: #fff;
     outline: none;
     font-size: 14px;
+    min-width: 0;
+    /* Prevents input from overflowing flex container */
 }
 
 .es-search-input::placeholder {
     color: #666;
 }
 
+.es-match-case-label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: #ccc;
+    cursor: pointer;
+    user-select: none;
+    background: #333;
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid #444;
+}
+
+.es-match-case-label:hover {
+    background: #444;
+    color: #fff;
+}
+
+.es-match-case-checkbox {
+    cursor: pointer;
+    margin: 0;
+}
+
 .es-count {
-    font-size: 12px;
-    color: #aaa;
+    font-size: 13px;
+    font-weight: 600;
+    color: #ffffff;
     min-width: 30px;
     text-align: right;
+    flex-shrink: 0;
 }
 
 .es-remove-btn {
@@ -118,6 +213,7 @@
     justify-content: center;
     padding: 2px;
     border-radius: 4px;
+    flex-shrink: 0;
 }
 
 .es-remove-btn:hover {
@@ -158,37 +254,30 @@
     color: black;
 }
 
-/* Yellow */
 .es-highlight-1 {
     background-color: rgba(0, 255, 255, 0.4);
     color: black;
 }
 
-/* Cyan */
 .es-highlight-2 {
     background-color: rgba(255, 0, 255, 0.4);
     color: black;
 }
 
-/* Magenta */
 .es-highlight-3 {
     background-color: rgba(0, 255, 0, 0.4);
     color: black;
 }
 
-/* Green */
 .es-highlight-4 {
     background-color: rgba(255, 165, 0, 0.4);
     color: black;
 }
 
-/* Orange */
 .es-highlight-5 {
     background-color: rgba(128, 0, 128, 0.4);
     color: white;
 }
-
-/* Purple */
 
 /* Row border colors matching highlights */
 .es-row-0 {
