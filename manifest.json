@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "Extended Multi-Search",
+  "version": "1.0",
+  "description": "Extends Ctrl+F functionality to support multiple simultaneous search terms.",
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "styles.css"
+      ],
+      "run_at": "document_end"
+    }
+  ],
+  "action": {
+    "default_title": "Extended Search"
+  }
+}

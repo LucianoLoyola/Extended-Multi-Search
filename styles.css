@@ -1,0 +1,216 @@
+/* Main container for the search widget */
+#extended-search-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 350px;
+    min-width: 300px;
+    min-height: 200px;
+    max-width: 800px;
+    max-height: 90vh;
+    background-color: #1a1a1a;
+    color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    padding: 16px;
+    z-index: 999999;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    border: 1px solid #333;
+    backdrop-filter: blur(10px);
+    transition: opacity 0.2s ease;
+    /* Removed transform transition to avoid conflict with resize */
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-20px);
+
+    /* Resizable properties */
+    resize: both;
+    overflow: hidden;
+    /* Changed from auto to hidden for the container itself, flex children handle overflow */
+    display: flex;
+    /* Changed from block to flex for internal sizing */
+    flex-direction: column;
+}
+
+#extended-search-container.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+/* Header */
+.es-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    font-weight: 600;
+    font-size: 16px;
+    color: #f0f0f0;
+}
+
+.es-close-btn {
+    background: none;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    font-size: 20px;
+    transition: color 0.2s;
+}
+
+.es-close-btn:hover {
+    color: #fff;
+}
+
+/* Search Rows Container */
+#es-search-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+    /* Take up available space */
+    overflow-y: auto;
+    /* Scroll internally */
+    padding-right: 4px;
+    /* Space for scrollbar */
+}
+
+/* Individual Search Row */
+.es-search-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #2a2a2a;
+    padding: 8px;
+    border-radius: 8px;
+    border-left: 4px solid transparent;
+    /* Color indicator */
+}
+
+.es-search-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #fff;
+    outline: none;
+    font-size: 14px;
+}
+
+.es-search-input::placeholder {
+    color: #666;
+}
+
+.es-count {
+    font-size: 12px;
+    color: #aaa;
+    min-width: 30px;
+    text-align: right;
+}
+
+.es-remove-btn {
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px;
+    border-radius: 4px;
+}
+
+.es-remove-btn:hover {
+    background: #3a3a3a;
+    color: #ff4d4d;
+}
+
+/* Footer Actions */
+.es-footer {
+    margin-top: 16px;
+    display: flex;
+    justify-content: center;
+}
+
+#es-add-btn {
+    background: #333;
+    color: #ccc;
+    border: 1px solid #444;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+#es-add-btn:hover {
+    background: #444;
+    color: #fff;
+    border-color: #555;
+}
+
+/* Highlight Colors */
+.es-highlight-0 {
+    background-color: rgba(255, 255, 0, 0.4);
+    color: black;
+}
+
+/* Yellow */
+.es-highlight-1 {
+    background-color: rgba(0, 255, 255, 0.4);
+    color: black;
+}
+
+/* Cyan */
+.es-highlight-2 {
+    background-color: rgba(255, 0, 255, 0.4);
+    color: black;
+}
+
+/* Magenta */
+.es-highlight-3 {
+    background-color: rgba(0, 255, 0, 0.4);
+    color: black;
+}
+
+/* Green */
+.es-highlight-4 {
+    background-color: rgba(255, 165, 0, 0.4);
+    color: black;
+}
+
+/* Orange */
+.es-highlight-5 {
+    background-color: rgba(128, 0, 128, 0.4);
+    color: white;
+}
+
+/* Purple */
+
+/* Row border colors matching highlights */
+.es-row-0 {
+    border-left-color: #ffff00;
+}
+
+.es-row-1 {
+    border-left-color: #00ffff;
+}
+
+.es-row-2 {
+    border-left-color: #ff00ff;
+}
+
+.es-row-3 {
+    border-left-color: #00ff00;
+}
+
+.es-row-4 {
+    border-left-color: #ffa500;
+}
+
+.es-row-5 {
+    border-left-color: #800080;
+}
