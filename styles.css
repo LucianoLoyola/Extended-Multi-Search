@@ -345,6 +345,35 @@
     border-left-color: #ffa500;
 }
 
-.es-row-5 {
-    border-left-color: #800080;
+
+/* Active Match Animation */
+@keyframes es-active-in {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+        outline: 1px solid rgba(0, 0, 0, 0);
+    }
+
+    50% {
+        transform: scale(1.1);
+        box-shadow: 0 0 8px 2px rgba(0, 0, 0, 0.4);
+        outline: 1px solid rgba(0, 0, 0, 0.5);
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 3px 2px rgba(0, 0, 0, 0.5);
+        outline: 1px solid rgba(0, 0, 0, 0.8);
+    }
+}
+
+.es-match-active {
+    /* Use outline instead of border to prevent layout shift */
+    outline: 1px solid rgba(0, 0, 0, 0.8);
+    box-shadow: 0 0 3px 2px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    position: relative;
+    border-radius: 2px;
+    /* Optional, for looks */
+    animation: es-active-in 0.6s ease-out;
 }

@@ -326,9 +326,24 @@ function navigateMatch(id, direction) {
   });
 
   updateCountDisplay(id);
+  updateActiveState(id);
 
   // Optional: flash effect or border to show which one is active could go here
   // For now, we rely on centering.
+}
+
+function updateActiveState(id) {
+  const termObj = searchTerms.find(t => t.id === id);
+  if (!termObj) return;
+
+  const highlights = document.querySelectorAll(`.es-highlight-${termObj.colorId}`);
+  highlights.forEach((el, index) => {
+    if (index === termObj.currentIndex) {
+      el.classList.add('es-match-active');
+    } else {
+      el.classList.remove('es-match-active');
+    }
+  });
 }
 
 /**
@@ -427,6 +442,7 @@ function highlightTerm(term, colorIndex, itemId, isCaseSensitive) {
     }
   }
   updateCountDisplay(itemId);
+  updateActiveState(itemId);
 }
 
 function updateCountDisplay(id) {
