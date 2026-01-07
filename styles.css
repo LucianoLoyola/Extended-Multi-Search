@@ -165,6 +165,43 @@
     /* Prevents input from overflowing flex container */
 }
 
+/* Nav Buttons */
+.es-nav-group {
+    display: flex;
+    gap: 2px;
+    margin-right: 4px;
+    flex-shrink: 0;
+}
+
+.es-nav-btn {
+    background: #333;
+    border: 1px solid #444;
+    color: #aaa;
+    cursor: pointer;
+    font-size: 10px;
+    /* Small arrows */
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    padding: 0;
+    transition: all 0.2s;
+    user-select: none;
+}
+
+.es-nav-btn:hover {
+    background: #444;
+    color: #fff;
+    border-color: #666;
+}
+
+.es-nav-btn:active {
+    background: #222;
+    transform: translateY(1px);
+}
+
 .es-search-input::placeholder {
     color: #666;
 }

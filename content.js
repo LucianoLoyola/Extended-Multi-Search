@@ -5,7 +5,7 @@
 const COLORS_COUNT = 6;
 let isVisible = false;
 let nextColorIndex = 0;
-let searchTerms = [{ id: 0, term: '', count: 0, colorId: 0, caseSensitive: true }];
+let searchTerms = [{ id: 0, term: '', count: 0, colorId: 0, caseSensitive: true, currentIndex: -1 }];
 nextColorIndex = 1;
 
 let container = null;
@@ -185,7 +185,7 @@ function addSearchRow() {
   const newColorId = nextColorIndex % COLORS_COUNT;
   nextColorIndex++;
 
-  searchTerms.push({ id: newId, term: '', count: 0, colorId: newColorId, caseSensitive: true });
+  searchTerms.push({ id: newId, term: '', count: 0, colorId: newColorId, caseSensitive: true, currentIndex: -1 });
   renderRows();
 
   setTimeout(() => {
@@ -237,6 +237,10 @@ function renderRows() {
     row.className = `es-search-row es-row-${colorIndex}`;
 
     row.innerHTML = `
+      <div class="es-nav-group">
+        <button class="es-nav-btn es-nav-prev" title="Previous Match" data-id="${item.id}">&#9664;</button>
+        <button class="es-nav-btn es-nav-next" title="Next Match" data-id="${item.id}">&#9654;</button>
+      </div>
       <input type="text" class="es-search-input" placeholder="Find..." value="${item.term}" data-id="${item.id}">
       <label class="es-match-case-label" title="Toggle Case Sensitivity">
         <input type="checkbox" class="es-match-case-checkbox" ${item.caseSensitive ? 'checked' : ''}>
@@ -252,6 +256,10 @@ function renderRows() {
       item.term = e.target.value;
       performSearch();
     });
+
+    // Navigation listeners
+    row.querySelector('.es-nav-prev').addEventListener('click', () => navigateMatch(item.id, -1));
+    row.querySelector('.es-nav-next').addEventListener('click', () => navigateMatch(item.id, 1));
 
     // Checkbox listener
     const caseCheckbox = row.querySelector('.es-match-case-checkbox');
@@ -279,6 +287,39 @@ function renderRows() {
 }
 
 /**
+ * Navigate between matches
+ */
+function navigateMatch(id, direction) {
+  const termObj = searchTerms.find(t => t.id === id);
+  if (!termObj || termObj.count === 0) return;
+
+  const highlights = document.querySelectorAll(`.es-highlight-${termObj.colorId}`);
+  if (highlights.length === 0) return;
+
+  let newIndex = termObj.currentIndex + direction;
+
+  // Wrap around
+  if (newIndex >= highlights.length) {
+    newIndex = 0;
+  } else if (newIndex < 0) {
+    newIndex = highlights.length - 1;
+  }
+
+  termObj.currentIndex = newIndex;
+
+  // Scroll to element
+  const target = highlights[newIndex];
+  target.scrollIntoView({
+    behavior: 'smooth',
+    block: 'center',
+    inline: 'center'
+  });
+
+  // Optional: flash effect or border to show which one is active could go here
+  // For now, we rely on centering.
+}
+
+/**
  * Core Search Logic
  */
 function performSearch() {
@@ -300,7 +341,10 @@ function clearHighlights() {
     parent.normalize();
   });
 
-  searchTerms.forEach(t => t.count = 0);
+  searchTerms.forEach(t => {
+    t.count = 0;
+    t.currentIndex = -1;
+  });
   document.querySelectorAll('.es-count').forEach(el => el.textContent = '');
 }
 
