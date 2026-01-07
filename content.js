@@ -42,6 +42,7 @@ function init() {
   container.id = 'extended-search-container';
   container.innerHTML = CONTAINER_HTML;
   document.body.appendChild(container);
+  console.log("ExtendedSearch: Initialized");
 
   // Event Listeners
   document.getElementById('es-close').addEventListener('click', toggleUI);
@@ -63,11 +64,13 @@ function init() {
 
   // Global Keyboard listener for Ctrl+F
   document.addEventListener('keydown', (e) => {
-    if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'f' || e.key === 'F' || e.code === 'KeyF')) {
+      console.log("ExtendedSearch: Ctrl+F detected");
       e.preventDefault();
       toggleUI(true);
     }
     if (e.key === 'Escape' && isVisible) {
+      console.log("ExtendedSearch: Escape detected");
       toggleUI(false);
     }
   });
@@ -161,6 +164,7 @@ function onMouseUp() {
  * Toggles the visibility of the search UI
  */
 function toggleUI(show) {
+  console.log("ExtendedSearch: toggleUI called with", show);
   if (typeof show === 'boolean') {
     isVisible = show;
   } else {
@@ -242,11 +246,16 @@ function renderRows() {
         <button class="es-nav-btn es-nav-next" title="Next Match" data-id="${item.id}">&#9654;</button>
       </div>
       <input type="text" class="es-search-input" placeholder="Find..." value="${item.term}" data-id="${item.id}">
+      
+      <span class="es-count" id="es-count-${item.id}">
+        ${item.count > 0 ? (item.currentIndex > -1 ? item.currentIndex + 1 : 0) + '/' + item.count : ''}
+      </span>
+
       <label class="es-match-case-label" title="Toggle Case Sensitivity">
         <input type="checkbox" class="es-match-case-checkbox" ${item.caseSensitive ? 'checked' : ''}>
         Case
       </label>
-      <span class="es-count" id="es-count-${item.id}">${item.count > 0 ? item.count : ''}</span>
+
       <button class="es-remove-btn" data-id="${item.id}" ${searchTerms.length === 1 ? 'disabled' : ''}>🗑️</button>
     `;
 
@@ -254,6 +263,7 @@ function renderRows() {
     const input = row.querySelector('.es-search-input');
     input.addEventListener('input', (e) => {
       item.term = e.target.value;
+      item.currentIndex = -1; // Reset index since term changed
       performSearch();
     });
 
@@ -315,6 +325,8 @@ function navigateMatch(id, direction) {
     inline: 'center'
   });
 
+  updateCountDisplay(id);
+
   // Optional: flash effect or border to show which one is active could go here
   // For now, we rely on centering.
 }
@@ -343,7 +355,7 @@ function clearHighlights() {
 
   searchTerms.forEach(t => {
     t.count = 0;
-    t.currentIndex = -1;
+    // We do NOT reset currentIndex here anymore to preserve navigation state across re-renders
   });
   document.querySelectorAll('.es-count').forEach(el => el.textContent = '');
 }
@@ -405,9 +417,31 @@ function highlightTerm(term, colorIndex, itemId, isCaseSensitive) {
   });
 
   const termObj = searchTerms.find(t => t.id === itemId);
-  if (termObj) termObj.count = matchCount;
-  const countEl = document.getElementById(`es-count-${itemId}`);
-  if (countEl) countEl.textContent = matchCount;
+  if (termObj) {
+    termObj.count = matchCount;
+
+    if (matchCount === 0) {
+      termObj.currentIndex = -1;
+    } else if (termObj.currentIndex >= matchCount) {
+      termObj.currentIndex = 0;
+    }
+  }
+  updateCountDisplay(itemId);
+}
+
+function updateCountDisplay(id) {
+  const termObj = searchTerms.find(t => t.id === id);
+  if (!termObj) return;
+
+  const countEl = document.getElementById(`es-count-${id}`);
+  if (countEl) {
+    if (termObj.count > 0) {
+      const current = termObj.currentIndex > -1 ? termObj.currentIndex + 1 : 0;
+      countEl.textContent = `${current}/${termObj.count}`;
+    } else {
+      countEl.textContent = '';
+    }
+  }
 }
 
 function escapeRegExp(string) {
