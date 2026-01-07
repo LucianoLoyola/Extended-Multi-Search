@@ -4,11 +4,12 @@ This Chrome extension extends the native "Ctrl+F" functionality, allowing you to
 
 ## Installation
 
-1. Open Google Chrome.
-2. Navigate to `chrome://extensions/`.
-3. Enable **Developer mode** (toggle in the top right corner).
-4. Click **Load unpacked**.
-5. Select this folder (`ExtendedSearch`).
+1. Clone the repository
+2. Open Google Chrome.
+3. Navigate to `chrome://extensions/`.
+4. Enable **Developer mode** (toggle in the top right corner).
+5. Click **Load unpacked**.
+6. Select this folder (`Extended-Multi-Search`).
 
 ## Usage
 
