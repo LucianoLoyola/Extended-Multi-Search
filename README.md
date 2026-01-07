@@ -1,5 +1,7 @@
 # Extended Multi-Search Extension
 
+https://github.com/user-attachments/assets/63a07be2-7afa-418e-a55d-569ccab17001
+
 This Chrome extension extends the native "Ctrl+F" functionality, allowing you to search for multiple terms simultaneously with different highlighting colors.
 
 ## Installation
