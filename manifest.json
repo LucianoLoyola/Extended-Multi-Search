@@ -1,27 +1,33 @@
 {
-  "manifest_version": 3,
-  "name": "Extended Multi-Search",
-  "version": "1.0",
-  "description": "Extends Ctrl+F functionality to support multiple simultaneous search terms.",
-  "permissions": [
-    "activeTab",
-    "scripting"
-  ],
-  "content_scripts": [
-    {
-      "matches": [
-        "<all_urls>"
-      ],
-      "js": [
-        "content.js"
-      ],
-      "css": [
-        "styles.css"
-      ],
-      "run_at": "document_end"
+    "manifest_version": 3,
+    "name": "Extended Multi-Search",
+    "version": "1.0",
+    "description": "Extends Ctrl+F functionality to support multiple simultaneous search terms.",
+    "permissions": [
+        "activeTab",
+        "scripting"
+    ],
+    "content_scripts": [
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "content.js"
+            ],
+            "css": [
+                "styles.css"
+            ],
+            "run_at": "document_end"
+        }
+    ],
+    "action": {
+        "default_title": "Extended Search",
+        "default_icon": "icons/Extended-multi-search-1.png"
+    },
+    "icons": {
+        "16": "icons/Extended-multi-search-3.png",
+        "48": "icons/Extended-multi-search-2.png",
+        "128": "icons/Extended-multi-search-1.png"
     }
-  ],
-  "action": {
-    "default_title": "Extended Search"
-  }
 }
