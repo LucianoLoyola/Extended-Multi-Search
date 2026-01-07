@@ -243,7 +243,7 @@ function renderRows() {
         Case
       </label>
       <span class="es-count" id="es-count-${item.id}">${item.count > 0 ? item.count : ''}</span>
-      ${searchTerms.length > 1 ? `<button class="es-remove-btn" data-id="${item.id}">🗑️</button>` : ''}
+      <button class="es-remove-btn" data-id="${item.id}" ${searchTerms.length === 1 ? 'disabled' : ''}>🗑️</button>
     `;
 
     // Listeners
