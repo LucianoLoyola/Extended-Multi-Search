@@ -2,11 +2,9 @@
  * Extended Search - Content Script
  */
 
-const COLORS_COUNT = 6;
+
 let isVisible = false;
-let nextColorIndex = 0;
-let searchTerms = [{ id: 0, term: '', count: 0, colorId: 0, caseSensitive: true, currentIndex: -1 }];
-nextColorIndex = 1;
+let searchTerms = [{ id: 0, term: '', count: 0, color: getRandomColor(), caseSensitive: true, currentIndex: -1 }];
 
 let container = null;
 let dragStartX, dragStartY, initialLeft, initialTop;
@@ -14,6 +12,44 @@ let isDragging = false;
 let isResizing = false;
 let currentResizeHandle = null;
 let resizeStartX, resizeStartY, initialWidth, initialHeight, initialResizeLeft, initialResizeTop;
+
+function getRandomColor() {
+  const letters = '0123456789ABCDEF';
+  let color = '#';
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
+
+function hexToRgba(hex, alpha) {
+  let c;
+  if (/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)) {
+    c = hex.substring(1).split('');
+    if (c.length == 3) {
+      c = [c[0], c[0], c[1], c[1], c[2], c[2]];
+    }
+    c = '0x' + c.join('');
+    return 'rgba(' + [(c >> 16) & 255, (c >> 8) & 255, c & 255].join(',') + ',' + alpha + ')';
+  }
+  return `rgba(255,255,0,${alpha})`; // fallback
+}
+
+function getContrastColor(hex) {
+  // Simple logic: convert to RGB, calculate brightness, return black or white
+  let r = 0, g = 0, b = 0;
+  if (hex.length === 4) {
+    r = parseInt(hex[1] + hex[1], 16);
+    g = parseInt(hex[2] + hex[2], 16);
+    b = parseInt(hex[3] + hex[3], 16);
+  } else if (hex.length === 7) {
+    r = parseInt(hex.substr(1, 2), 16);
+    g = parseInt(hex.substr(3, 2), 16);
+    b = parseInt(hex.substr(5, 2), 16);
+  }
+  const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+  return (yiq >= 128) ? 'black' : 'white';
+}
 
 // Template for inner HTML of the container
 const CONTAINER_HTML = `
@@ -186,10 +222,8 @@ function toggleUI(show) {
  */
 function addSearchRow() {
   const newId = searchTerms.length > 0 ? Math.max(...searchTerms.map(t => t.id)) + 1 : 0;
-  const newColorId = nextColorIndex % COLORS_COUNT;
-  nextColorIndex++;
 
-  searchTerms.push({ id: newId, term: '', count: 0, colorId: newColorId, caseSensitive: true, currentIndex: -1 });
+  searchTerms.push({ id: newId, term: '', count: 0, color: getRandomColor(), caseSensitive: true, currentIndex: -1 });
   renderRows();
 
   setTimeout(() => {
@@ -235,10 +269,9 @@ function renderRows() {
   wrapper.innerHTML = '';
 
   searchTerms.forEach((item) => {
-    const colorIndex = item.colorId;
-
     const row = document.createElement('div');
-    row.className = `es-search-row es-row-${colorIndex}`;
+    row.className = `es-search-row`;
+    row.style.borderLeftColor = item.color;
 
     row.innerHTML = `
       <div class="es-nav-group">
@@ -303,7 +336,7 @@ function navigateMatch(id, direction) {
   const termObj = searchTerms.find(t => t.id === id);
   if (!termObj || termObj.count === 0) return;
 
-  const highlights = document.querySelectorAll(`.es-highlight-${termObj.colorId}`);
+  const highlights = document.querySelectorAll(`.es-highlight-${termObj.id}`);
   if (highlights.length === 0) return;
 
   let newIndex = termObj.currentIndex + direction;
@@ -327,16 +360,13 @@ function navigateMatch(id, direction) {
 
   updateCountDisplay(id);
   updateActiveState(id);
-
-  // Optional: flash effect or border to show which one is active could go here
-  // For now, we rely on centering.
 }
 
 function updateActiveState(id) {
   const termObj = searchTerms.find(t => t.id === id);
   if (!termObj) return;
 
-  const highlights = document.querySelectorAll(`.es-highlight-${termObj.colorId}`);
+  const highlights = document.querySelectorAll(`.es-highlight-${termObj.id}`);
   highlights.forEach((el, index) => {
     if (index === termObj.currentIndex) {
       el.classList.add('es-match-active');
@@ -356,7 +386,7 @@ function performSearch() {
   if (activeTerms.length === 0) return;
 
   activeTerms.forEach((item) => {
-    highlightTerm(item.term, item.colorId, item.id, item.caseSensitive);
+    highlightTerm(item.term, item.color, item.id, item.caseSensitive);
   });
 }
 
@@ -375,7 +405,7 @@ function clearHighlights() {
   document.querySelectorAll('.es-count').forEach(el => el.textContent = '');
 }
 
-function highlightTerm(term, colorIndex, itemId, isCaseSensitive) {
+function highlightTerm(term, color, itemId, isCaseSensitive) {
   if (!term) return;
 
   const flags = isCaseSensitive ? 'g' : 'gi';
@@ -396,6 +426,9 @@ function highlightTerm(term, colorIndex, itemId, isCaseSensitive) {
   }
 
   let matchCount = 0;
+  // Dynamic color calculation
+  const highlightColor = hexToRgba(color, 0.4);
+  const textColor = getContrastColor(color);
 
   nodesToReplace.forEach(node => {
     // Re-check validity in case DOM changed
@@ -418,7 +451,10 @@ function highlightTerm(term, colorIndex, itemId, isCaseSensitive) {
         hasMatch = true;
         matchCount++;
         const span = document.createElement('span');
-        span.className = `es-highlight-${colorIndex}`;
+        // Use ID based class for querying, dynamic styles for color
+        span.className = `es-highlight-${itemId}`;
+        span.style.backgroundColor = highlightColor;
+        span.style.color = textColor;
         span.textContent = part;
         fragment.appendChild(span);
       } else {
