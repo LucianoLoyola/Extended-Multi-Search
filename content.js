@@ -4,7 +4,7 @@
 
 
 let isVisible = false;
-let searchTerms = [{ id: 0, term: '', count: 0, color: getRandomColor(), caseSensitive: true, currentIndex: -1 }];
+let searchTerms = [{ id: 0, term: '', count: 0, color: getSystemAdaptiveColor(), caseSensitive: true, currentIndex: -1 }];
 
 let container = null;
 let dragStartX, dragStartY, initialLeft, initialTop;
@@ -13,13 +13,35 @@ let isResizing = false;
 let currentResizeHandle = null;
 let resizeStartX, resizeStartY, initialWidth, initialHeight, initialResizeLeft, initialResizeTop;
 
-function getRandomColor() {
-  const letters = '0123456789ABCDEF';
-  let color = '#';
-  for (let i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-  return color;
+function getSystemAdaptiveColor() {
+  const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+  // HSL generation
+  // Hue: 0-360
+  // Saturation: 70-100% (keep it colorful)
+  // Lightness:
+  //   If Dark Mode (Background is dark): We want bright highlights. Lightness 60-80%.
+  //   If Light Mode (Background is light): We want normal/darker highlights? 
+  //    एक्चुअली standard highlights like yellow (#FFFF00) are L=50%. 
+  //   If we go too light on white bg, it's invisible.
+  //   So Light Mode -> Lightness 40-60%.
+
+  const h = Math.floor(Math.random() * 360);
+  const s = Math.floor(Math.random() * 30) + 70; // 70-100%
+  const l = isDarkMode ? (Math.floor(Math.random() * 15) + 75) : (Math.floor(Math.random() * 20) + 40);
+
+  return hslToHex(h, s, l);
+}
+
+function hslToHex(h, s, l) {
+  l /= 100;
+  const a = s * Math.min(l, 1 - l) / 100;
+  const f = n => {
+    const k = (n + h / 30) % 12;
+    const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+    return Math.round(255 * color).toString(16).padStart(2, '0');
+  };
+  return `#${f(0)}${f(8)}${f(4)}`;
 }
 
 function hexToRgba(hex, alpha) {
@@ -223,7 +245,7 @@ function toggleUI(show) {
 function addSearchRow() {
   const newId = searchTerms.length > 0 ? Math.max(...searchTerms.map(t => t.id)) + 1 : 0;
 
-  searchTerms.push({ id: newId, term: '', count: 0, color: getRandomColor(), caseSensitive: true, currentIndex: -1 });
+  searchTerms.push({ id: newId, term: '', count: 0, color: getSystemAdaptiveColor(), caseSensitive: true, currentIndex: -1 });
   renderRows();
 
   setTimeout(() => {
