@@ -1,12 +1,13 @@
 # Extended Multi-Search Extension
 
+This Chrome extension extends the native "Ctrl+F" functionality, allowing you to search for multiple terms simultaneously with different highlighting colors.
+
 https://github.com/user-attachments/assets/63a07be2-7afa-418e-a55d-569ccab17001
 
-This Chrome extension extends the native "Ctrl+F" functionality, allowing you to search for multiple terms simultaneously with different highlighting colors.
 
 ## Installation
 
-1. Clone the repository
+1. Download the latest release
 2. Open Google Chrome.
 3. Navigate to `chrome://extensions/`.
 4. Enable **Developer mode** (toggle in the top right corner).
